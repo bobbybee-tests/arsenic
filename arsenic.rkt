@@ -28,32 +28,18 @@
 ; Project hashmap
 (define project (source-project source-directory))
 
-; Pretty print Scratch objects for introspection
+; takes a full script and compiles it, using recursion as necessary
 
-(define (pretty-print-sprite sprite)
-  (list "Sprite "
-        (hash-ref sprite 'objName)
-        ", "
-        (if (hash-ref sprite 'visible) "visible" "invisible")))
+(define (compile-script script)
+  (string-join (map compile-block (last script)) "\n"))
 
-(define (pretty-print-watcher watcher)
-  (list "Watcher "
-        (hash-ref watcher 'cmd)
-        ", target "
-        (hash-ref watcher 'target)
-        ", "
-        (if (hash-ref watcher 'visible) "visible" "invisible")))
+; stub
+(define (compile-block block)
+  (~a block))
 
-; Pretty print Scratch project
-
-(display (string-join
- (map 
-   (lambda (child)
-     (string-join
-      (cond
-        ((hash-has-key? child 'spriteInfo) (pretty-print-sprite child))
-        ((hash-has-key? child 'target)     (pretty-print-watcher child))
-        (else                              "Unknown Scratch object found"))
-      ""))
-   (hash-ref project 'children))
-  "\n"))
+(display (map
+  (lambda (child)
+    (map compile-script (hash-ref child 'scripts)))
+  (filter
+    (lambda (child) (hash-has-key? child 'spriteInfo))
+    (hash-ref project 'children))))
