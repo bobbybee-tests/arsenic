@@ -28,5 +28,28 @@
 ; Project hashmap
 (define project (source-project source-directory))
 
-; Test
-(hash-ref project (string->symbol "objName"))
+; Pretty print Scratch objects for introspection
+
+(define (pretty-print-sprite sprite)
+  (list "Sprite "
+        (hash-ref sprite 'objName)))
+
+(define (pretty-print-watcher watcher)
+  (list "Watcher "
+        (hash-ref watcher 'cmd)
+        ", target "
+        (hash-ref watcher 'target)))
+
+; Pretty print Scratch project
+
+(display (string-join
+ (map 
+   (lambda (child)
+     (string-join
+      (cond
+        ((hash-has-key? child 'spriteInfo) (pretty-print-sprite child))
+        ((hash-has-key? child 'target)     (pretty-print-watcher child))
+        (else                              "Unknown Scratch object found"))
+      ""))
+   (hash-ref project 'children))
+  "\n"))
