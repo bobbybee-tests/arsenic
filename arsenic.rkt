@@ -32,13 +32,17 @@
 
 (define (pretty-print-sprite sprite)
   (list "Sprite "
-        (hash-ref sprite 'objName)))
+        (hash-ref sprite 'objName))
+        ", "
+        (if (hash-ref sprite 'visible) "visible" "invisible")
 
 (define (pretty-print-watcher watcher)
   (list "Watcher "
         (hash-ref watcher 'cmd)
         ", target "
         (hash-ref watcher 'target)))
+        ", "
+        (if (hash-ref sprite 'visible) "visible" "invisible")
 
 ; Pretty print Scratch project
 
