@@ -34,14 +34,14 @@
   ;(apply append (map ir-command (last script))))
   ;(ir-command (car (last script))))
   ;(map ir-command (last script)))
-  (foldl
+  (car (foldl
     (lambda (command ir)
       (match-let*
         ([(list source base) ir]
          [(list emission newbase) (ir-command command base)])
         (list (append source emission) newbase)))
     (list '() 0)
-    (last script)))
+    (last script))))
 
 (define (ir-command command cbase)
   (foldl 
@@ -49,7 +49,7 @@
       (match-let*
         ([(list source base) ir]
          [(list identfier emission consumption) (ir-reporter reporter base)])
-        (list (append source emission) (+ base consumption))))
+        (list (append (list source) (list emission)) (+ base consumption))))
     (list '() cbase)
     (cdr command)))
   
@@ -59,9 +59,9 @@
   (let ([identifier (string-append "temp" (number->string base))])
     (list identifier (list "=" identifier "42") 1)))
 
-(map
+(display (map
   (lambda (child)
     (map ir-script (hash-ref child 'scripts)))
   (filter
     (lambda (child) (hash-has-key? child 'spriteInfo))
-    (hash-ref project 'children)))
+    (hash-ref project 'children))))
