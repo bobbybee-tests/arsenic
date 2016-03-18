@@ -31,9 +31,6 @@
 ; Generate IR for a script
 
 (define (ir-script script)
-  ;(apply append (map ir-command (last script))))
-  ;(ir-command (car (last script))))
-  ;(map ir-command (last script)))
   (car (foldl
     (lambda (command ir)
       (match-let*
@@ -49,7 +46,7 @@
       (match-let*
         ([(list source base) ir]
          [(list identfier emission consumption) (ir-reporter reporter base)])
-        (list (append (list source) (list emission)) (+ base consumption))))
+        (list (append source (list emission)) (+ base consumption))))
     (list '() cbase)
     (cdr command)))
   
