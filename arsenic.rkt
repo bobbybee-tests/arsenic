@@ -41,13 +41,21 @@
     (last script))))
 
 (define (ir-command command cbase)
+  (match-let ([(list source args base) (ir-parameters command cbase)])
+    (display (reverse args))
+    (list source base)))
+
+(define (ir-parameters command cbase)
   (foldl 
     (lambda (reporter ir)
       (match-let*
-        ([(list source base) ir]
-         [(list identfier emission consumption) (ir-reporter reporter base)])
-        (list (append source emission) (+ base consumption))))
-    (list '() cbase)
+        ([(list source args base) ir]
+         [(list identifier emission consumption) (ir-reporter reporter base)])
+        (list 
+          (append source emission)
+          (cons identifier args)
+          (+ base consumption))))
+    (list '() '() cbase)
     (cdr command)))
   
 (define (ir-reporter reporter base)
