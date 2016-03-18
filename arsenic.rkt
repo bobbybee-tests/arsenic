@@ -31,20 +31,15 @@
 ; Generate IR for a script
 
 (define (ir-script script)
-  (apply append (map ir-block (last script))))
+  (apply append (map ir-command (last script))))
 
-(define (ir-block block)
-  (cond
-    [(list? block) (ir-command block)]
-    [(
+(define (ir-command command)
+  (cdr command))
 
-(define (ir-command block)
-  (case (first block)
-    [("gotoX:y:")         (list (list "param" (ir-reporter (list-ref block 1)))
-                                (list "param" (ir-reporter (list-ref block 2)))
-                                (list "call"  "gotoX:y:"))]
-    [else                 (list (list "unknown"))]))
-           
+; stub
+
+(define (ir-reporter reporter base)
+  (values (string-append "temp" base) (list "=" "tempN" "42") (+ base 1)))
 
 (map
   (lambda (child)
