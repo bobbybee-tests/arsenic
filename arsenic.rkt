@@ -56,7 +56,8 @@
 ; stub
 
 (define (ir-reporter reporter base)
-  (list (string-append "temp" (number->string base)) (list "=" "tempN" "42") 1))
+  (let ([identifier (string-append "temp" (number->string base))])
+    (list identifier (list "=" identifier "42") 1)))
 
 (map
   (lambda (child)
