@@ -28,18 +28,27 @@
 ; Project hashmap
 (define project (source-project source-directory))
 
-; takes a full script and compiles it, using recursion as necessary
+; Generate IR for a script
 
-(define (compile-script script)
-  (string-join (map compile-block (last script)) "\n"))
+(define (ir-script script)
+  (apply append (map ir-block (last script))))
 
-; stub
-(define (compile-block block)
-  (~a block))
+(define (ir-block block)
+  (cond
+    [(list? block) (ir-command block)]
+    [(
 
-(display (map
+(define (ir-command block)
+  (case (first block)
+    [("gotoX:y:")         (list (list "param" (ir-reporter (list-ref block 1)))
+                                (list "param" (ir-reporter (list-ref block 2)))
+                                (list "call"  "gotoX:y:"))]
+    [else                 (list (list "unknown"))]))
+           
+
+(map
   (lambda (child)
-    (map compile-script (hash-ref child 'scripts)))
+    (map ir-script (hash-ref child 'scripts)))
   (filter
     (lambda (child) (hash-has-key? child 'spriteInfo))
-    (hash-ref project 'children))))
+    (hash-ref project 'children)))
