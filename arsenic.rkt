@@ -42,7 +42,8 @@
 
 (define (ir-command command cbase)
   (match-let ([(list source args base) (ir-parameters command cbase)])
-    (display (reverse args))
+    (print (car command))
+    (print (reverse args))
     (list source base)))
 
 (define (ir-parameters command cbase)
