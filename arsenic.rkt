@@ -28,7 +28,7 @@
 ; Project hashmap
 (define project (source-project source-directory))
 
-; Generate IR for a script
+; Generate SSA-form IR for a script
 
 (define (ir-script script)
   (car (foldl
@@ -46,15 +46,15 @@
       (match-let*
         ([(list source base) ir]
          [(list identfier emission consumption) (ir-reporter reporter base)])
-        (list (append source (list emission)) (+ base consumption))))
+        (list (append source emission) (+ base consumption))))
     (list '() cbase)
     (cdr command)))
   
-; stub
-
 (define (ir-reporter reporter base)
-  (let ([identifier (string-append "temp" (number->string base))])
-    (list identifier (list "=" identifier "42") 1)))
+  (if (number? reporter)
+    (list reporter '() 0) 
+    (let ([identifier (string-append "temp" (number->string base))])
+      (list identifier (list (list "=" identifier "42")) 1))))
 
 (display (map
   (lambda (child)
