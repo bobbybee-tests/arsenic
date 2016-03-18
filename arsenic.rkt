@@ -31,15 +31,24 @@
 ; Generate IR for a script
 
 (define (ir-script script)
-  (apply append (map ir-command (last script))))
+  ;(apply append (map ir-command (last script))))
+  ;(ir-command (car (last script))))
+  (map ir-command (last script)))
 
 (define (ir-command command)
-  (cdr command))
-
+  (foldl 
+    (lambda (reporter ir)
+      (let*-values
+        ([(source base) (values 1 2)]
+         [(identfier emission consumption) (ir-reporter reporter base)])
+        (values ((append source emission) (+ base consumption)))))
+    (values '() 0)
+    (cdr command)))
+  
 ; stub
 
 (define (ir-reporter reporter base)
-  (values (string-append "temp" base) (list "=" "tempN" "42") (+ base 1)))
+  (values (string-append "temp" base) (list "=" "tempN" "42") 1))
 
 (map
   (lambda (child)
