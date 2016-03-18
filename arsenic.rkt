@@ -33,22 +33,30 @@
 (define (ir-script script)
   ;(apply append (map ir-command (last script))))
   ;(ir-command (car (last script))))
-  (map ir-command (last script)))
+  ;(map ir-command (last script)))
+  (foldl
+    (lambda (command ir)
+      (match-let*
+        ([(list source base) ir]
+         [(list emission newbase) (ir-command command base)])
+        (list (append source emission) newbase)))
+    (list '() 0)
+    (last script)))
 
-(define (ir-command command)
+(define (ir-command command cbase)
   (foldl 
     (lambda (reporter ir)
-      (let*-values
-        ([(source base) (values 1 2)]
-         [(identfier emission consumption) (ir-reporter reporter base)])
-        (values ((append source emission) (+ base consumption)))))
-    (values '() 0)
+      (match-let*
+        ([(list source base) ir]
+         [(list identfier emission consumption) (ir-reporter reporter base)])
+        (list (append source emission) (+ base consumption))))
+    (list '() cbase)
     (cdr command)))
   
 ; stub
 
 (define (ir-reporter reporter base)
-  (values (string-append "temp" base) (list "=" "tempN" "42") 1))
+  (list (string-append "temp" (number->string base)) (list "=" "tempN" "42") 1))
 
 (map
   (lambda (child)
