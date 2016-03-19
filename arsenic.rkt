@@ -60,8 +60,7 @@
 (define (ir-reporter reporter base)
   (if (number? reporter)
     (list reporter '() 0) 
-    (let ([identifier (string-append "temp" (number->string base))])
-      (list identifier (list (list "=" identifier "42")) 1))))
+    (list base (list (list "=" base "42")) 1)))
 
 (display (map
   (lambda (child)
