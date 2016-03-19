@@ -42,7 +42,11 @@
 
 (define (ir-command command cbase)
   (match-let ([(list source args base) (ir-parameters command cbase)])
-    (list source base)))
+    (list 
+      (cons 
+        (list "call" (string-append "scratch_" (car command)))
+        source)
+      base)))
 
 (define (ir-parameters command cbase)
   (foldl 
