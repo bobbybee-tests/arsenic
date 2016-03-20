@@ -37,11 +37,11 @@
   (foldl
     (lambda (command ir)
       (match-let*
-          ([(list identifiers source base) ir]
-           [(list emission newbase) (ir-head-block command base)]
+          ([(list block-identifier source newbase) ir]
+           [(list emission newbase) (ir-head-block command newbase)]
            [identifier (+ newbase 1)])
-          (list 
-            (cons identifier identifiers)
+          (list
+            block-identifier
             (append (cons (list "label" identifier) emission) source)
             identifier)))
       (list base source base)
