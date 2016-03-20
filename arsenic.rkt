@@ -54,7 +54,9 @@
 
 (define (ir-cblock cblock base)
   (match-let ([(list source args base) (ir-parameters cblock base ir-codeblock #f)])
-    (list source base)))
+    (list (cons (case (first cblock) 
+                  [("doForever") (list "jump" (first args) "unconditional")])
+           source) base)))
 
 (define (ir-command command cbase)
   (match-let ([(list source args base) (ir-parameters command cbase ir-reporter #t)])
@@ -75,12 +77,24 @@
           (cons identifier args)
           (+ base consumption))))
     (list '() '() cbase)
-    (cdr command)))
+    (rest command)))
   
 (define (ir-reporter reporter base source)
-  (cond [(number? reporter) (list (list "constint" reporter) source 0)]
-        [(string? reporter) (list (list "conststr" reporter) source 0)]
-        [else               (list (list "und")               source 0)]))
+  (cond [(number? reporter)
+           (list
+             (+ base 1)
+             (cons (list (+ base 1) (list "constint" reporter) "int") source)
+             0)]
+        [(string? reporter)
+           (list
+             (+ base 1)
+             (cons (list (+ base 1) (list "conststr" reporter) "string") source)
+             0)]
+        [else
+           (list
+             (+ base 1) 
+             (cons (list (+ base 1) "und" "und") source)
+             0)]))
 
 (pretty-print (map
   (lambda (child)
