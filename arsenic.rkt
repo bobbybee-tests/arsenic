@@ -37,10 +37,10 @@
   (foldl
     (lambda (command ir)
       (match-let*
-          ([(list source base) ir]
+          ([(list source args base) ir]
            [(list emission newbase) (ir-head-block command base)])
-          (list (append emission source) newbase)))
-      (list source base)
+          (list (append emission source) args newbase)))
+      (list source '() base)
       reporter))
 
 (define (ir-head-block block base)
