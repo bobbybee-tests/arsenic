@@ -62,9 +62,9 @@
     (cdr command)))
   
 (define (ir-reporter reporter base source)
-  (if (number? reporter)
-    (list (list "constint" reporter) source 0) 
-    (list (list "identifer" base) (cons (list "=" base "42") source) 1)))
+  (cond [(number? reporter) (list (list "constint" reporter) source 0)]
+        [(string? reporter) (list (list "conststr" reporter) source 0)]
+        [else               (list (list "und")               source 0)]))
 
 (display (map
   (lambda (child)
