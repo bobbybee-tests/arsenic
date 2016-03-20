@@ -31,29 +31,41 @@
 ; Generate SSA-form IR for a script
 
 (define (ir-script script)
-  (reverse (car (foldl
+  (reverse (car (ir-codeblock (last script) 0 '()))))
+
+(define (ir-codeblock reporter base source)
+  (foldl
     (lambda (command ir)
       (match-let*
-        ([(list source base) ir]
-         [(list emission newbase) (ir-command command base)])
-        (list (append emission source) newbase)))
-    (list '() 0)
-    (last script)))))
+          ([(list source base) ir]
+           [(list emission newbase) (ir-head-block command base)])
+          (list (append emission source) newbase)))
+      (list source base)
+      reporter))
+
+(define (ir-head-block block base)
+  (case (first block)
+    [("doForever")  (ir-cblock block base)]
+    [else           (ir-command block base)]))
+
+(define (ir-cblock cblock base)
+  (match-let ([(list source args base) (ir-parameters cblock base ir-codeblock)])
+    (list source base)))
 
 (define (ir-command command cbase)
-  (match-let ([(list source args base) (ir-parameters command cbase)])
+  (match-let ([(list source args base) (ir-parameters command cbase ir-reporter)])
     (list 
       (cons 
         (list "call" (string-append "scratch_" (car command)))
         source)
       base)))
 
-(define (ir-parameters command cbase)
+(define (ir-parameters command cbase backend)
   (foldl 
     (lambda (reporter ir)
       (match-let*
         ([(list source args base) ir]
-         [(list identifier emission consumption) (ir-reporter reporter base source)])
+         [(list identifier emission consumption) (backend reporter base source)])
         (list
           (cons (list "param" identifier) emission)
           (cons identifier args)
