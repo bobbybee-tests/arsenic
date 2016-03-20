@@ -31,14 +31,14 @@
 ; Generate SSA-form IR for a script
 
 (define (ir-script script)
-  (reverse (car (foldl
+  (car (foldl
     (lambda (command ir)
       (match-let*
         ([(list source base) ir]
          [(list emission newbase) (ir-command command base)])
         (list (cons emission source) newbase)))
     (list '() 0)
-    (last script)))))
+    (last script))))
 
 (define (ir-command command cbase)
   (match-let ([(list source args base) (ir-parameters command cbase)])
