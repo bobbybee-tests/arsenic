@@ -82,7 +82,7 @@
         [(string? reporter) (list (list "conststr" reporter) source 0)]
         [else               (list (list "und")               source 0)]))
 
-(display (map
+(pretty-print (map
   (lambda (child)
     (map ir-script (hash-ref child 'scripts)))
   (filter
