@@ -31,14 +31,14 @@
 ; Generate SSA-form IR for a script
 
 (define (ir-script script)
-  (car (foldl
+  (reverse (car (foldl
     (lambda (command ir)
       (match-let*
         ([(list source base) ir]
          [(list emission newbase) (ir-command command base)])
-        (list (cons emission source) newbase)))
+        (list (append emission source) newbase)))
     (list '() 0)
-    (last script))))
+    (last script)))))
 
 (define (ir-command command cbase)
   (match-let ([(list source args base) (ir-parameters command cbase)])
@@ -53,18 +53,18 @@
     (lambda (reporter ir)
       (match-let*
         ([(list source args base) ir]
-         [(list identifier emission consumption) (ir-reporter reporter base)])
-        (list 
-          (cons (cons (list "param" identifier) emission) source)
+         [(list identifier emission consumption) (ir-reporter reporter base source)])
+        (list
+          (cons (list "param" identifier) emission)
           (cons identifier args)
           (+ base consumption))))
     (list '() '() cbase)
     (cdr command)))
   
-(define (ir-reporter reporter base)
+(define (ir-reporter reporter base source)
   (if (number? reporter)
-    (list (list "constint" reporter) '() 0) 
-    (list (list "identifer" base) (list (list "=" base "42")) 1)))
+    (list (list "constint" reporter) source 0) 
+    (list (list "identifer" base) (cons (list "=" base "42") source) 1)))
 
 (display (map
   (lambda (child)
