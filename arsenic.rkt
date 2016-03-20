@@ -55,7 +55,7 @@
         ([(list source args base) ir]
          [(list identifier emission consumption) (ir-reporter reporter base)])
         (list 
-          (cons emission source)
+          (cons (cons (list "param" identifier) emission) source)
           (cons identifier args)
           (+ base consumption))))
     (list '() '() cbase)
@@ -63,8 +63,8 @@
   
 (define (ir-reporter reporter base)
   (if (number? reporter)
-    (list reporter '() 0) 
-    (list base (list (list "=" base "42")) 1)))
+    (list (list "constint" reporter) '() 0) 
+    (list (list "identifer" base) (list (list "=" base "42")) 1)))
 
 (display (map
   (lambda (child)
