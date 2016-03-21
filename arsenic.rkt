@@ -80,27 +80,23 @@
     (rest command)))
   
 (define (ir-reporter reporter base source)
-  (let ([identifier (+ base 1)])
+  (let ([id (+ base 1)])
     (cond [(number? reporter)
-             (list identifier (cons (list identifier (list "constint" reporter) "int") source) 0)]
+             (list id (cons (list "=" id "int" "const" reporter) source) 1)]
           [(string? reporter)
-             (list identifier (cons (list identifier (list "conststr" reporter) "str") source) 0)]
+             (list id (cons (list "=" id "str" "const" reporter) source) 1)]
           [else
-             (ir-reporter-complex reporter base source)])))
+             (ir-reporter-complex reporter (+ base 1) source id)])))
 
-(define (ir-reporter-complex reporter base source)
+(define (ir-reporter-complex reporter base source id)
   (match-let ([(list source args base) (ir-parameters reporter base ir-reporter #t)])
-    (print args)
     (cond [(member (first reporter) '("+" "-" "*" "/"))
              (list
-               (+ base 1)
-               (cons (list (+ base 1) (list "identifier" "arithmund") "int") source)
-               0)]
+               id 
+               (cons (list "=" id (first reporter) "int") source)
+               1)]
           [else
-             (list
-               (+ base 1) 
-               (cons (list (+ base 1) "und" "und") source)
-               0)])))
+             (list id (cons (list "=" id "und") source) 1)])))
   
 (pretty-print (map
   (lambda (child)
