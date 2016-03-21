@@ -91,10 +91,7 @@
 (define (ir-reporter-complex reporter base source id)
   (match-let ([(list source args base) (ir-parameters reporter base ir-reporter #t)])
     (cond [(member (first reporter) '("+" "-" "*" "/"))
-             (list
-               id 
-               (cons (list "=" id (first reporter) "int") source)
-               1)]
+             (list id (cons (list "=" id (first reporter) "int") source) 1)]
           [else
              (list id (cons (list "=" id "und") source) 1)])))
   
